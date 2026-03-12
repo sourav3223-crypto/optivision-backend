@@ -7,67 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  SUPER_ADMIN
-  SHOP_ADMIN
-  STAFF
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
-
-enum FrameShape {
-  ROUND
-  OVAL
-  RECTANGLE
-  SQUARE
-  CAT_EYE
-  AVIATOR
-  WAYFARER
-  GEOMETRIC
-  RIMLESS
-  SEMI_RIMLESS
-}
-
-enum OrderStatus {
-  CREATED
-  LENS_ORDERED
-  GRINDING
-  FITTING
-  READY
-  DELIVERED
-  CANCELLED
-}
-
-enum PaymentMethod {
-  CASH
-  UPI
-  CARD
-  MIXED
-}
-
-enum PaymentStatus {
-  PENDING
-  PARTIAL
-  PAID
-}
-
-enum StockMovementType {
-  IN
-  OUT
-  ADJUSTMENT
-  RETURN
-}
-
-enum LensType {
-  SINGLE_VISION
-  BIFOCAL
-  PROGRESSIVE
-  READING
-}
+enum Role { SUPER_ADMIN SHOP_ADMIN STAFF }
+enum Gender { MALE FEMALE OTHER }
+enum FrameShape { ROUND OVAL RECTANGLE SQUARE CAT_EYE AVIATOR WAYFARER GEOMETRIC RIMLESS SEMI_RIMLESS }
+enum OrderStatus { CREATED LENS_ORDERED GRINDING FITTING READY DELIVERED CANCELLED }
+enum PaymentMethod { CASH UPI CARD MIXED }
+enum PaymentStatus { PENDING PARTIAL PAID }
+enum StockMovementType { IN OUT ADJUSTMENT RETURN }
+enum LensType { SINGLE_VISION BIFOCAL PROGRESSIVE READING }
 
 model Store {
   id             String   @id @default(uuid())
@@ -82,14 +29,14 @@ model Store {
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  users          User[]
-  customers      Customer[]
-  frames         Frame[]
-  lenses         Lens[]
-  orders         Order[]
-  accessories    Accessory[]
-  suppliers      Supplier[]
-  purchases      Purchase[]
+  users       User[]
+  customers   Customer[]
+  frames      Frame[]
+  lenses      Lens[]
+  orders      Order[]
+  accessories Accessory[]
+  suppliers   Supplier[]
+  purchases   Purchase[]
   @@map("stores")
 }
 
@@ -105,26 +52,26 @@ model User {
   lastLogin    DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-  store        Store     @relation(fields: [storeId], references: [id])
-  orders       Order[]
+  store  Store   @relation(fields: [storeId], references: [id])
+  orders Order[]
   @@index([storeId])
   @@index([email])
   @@map("users")
 }
 
 model Customer {
-  id            String         @id @default(uuid())
-  storeId       String
-  name          String
-  phone         String
-  email         String?
-  address       String?
-  gender        Gender?
-  age           Int?
-  dateOfBirth   DateTime?
-  notes         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id          String    @id @default(uuid())
+  storeId     String
+  name        String
+  phone       String
+  email       String?
+  address     String?
+  gender      Gender?
+  age         Int?
+  dateOfBirth DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   store         Store          @relation(fields: [storeId], references: [id])
   prescriptions Prescription[]
   orders        Order[]
@@ -152,8 +99,8 @@ model Prescription {
   notes      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  customer   Customer @relation(fields: [customerId], references: [id])
-  orders     Order[]
+  customer Customer @relation(fields: [customerId], references: [id])
+  orders   Order[]
   @@index([customerId])
   @@map("prescriptions")
 }
@@ -176,10 +123,10 @@ model Frame {
   supplierId    String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
-  store         Store      @relation(fields: [storeId], references: [id])
-  supplier      Supplier?  @relation(fields: [supplierId], references: [id])
-  orderItems    OrderItem[]
-  stockLogs     StockMovement[]
+  store      Store           @relation(fields: [storeId], references: [id])
+  supplier   Supplier?       @relation(fields: [supplierId], references: [id])
+  orderItems OrderItem[]
+  stockLogs  StockMovement[]
   @@index([storeId])
   @@index([brand])
   @@map("frames")
@@ -201,30 +148,30 @@ model Lens {
   supplierId    String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  store         Store    @relation(fields: [storeId], references: [id])
-  supplier      Supplier? @relation(fields: [supplierId], references: [id])
-  orderItems    OrderItem[]
-  stockLogs     StockMovement[]
+  store      Store           @relation(fields: [storeId], references: [id])
+  supplier   Supplier?       @relation(fields: [supplierId], references: [id])
+  orderItems OrderItem[]
+  stockLogs  StockMovement[]
   @@index([storeId])
   @@map("lenses")
 }
 
 model Accessory {
-  id            String  @id @default(uuid())
+  id            String   @id @default(uuid())
   storeId       String
   name          String
   category      String
-  purchasePrice Float   @default(0)
+  purchasePrice Float    @default(0)
   sellingPrice  Float
-  stockQty      Int     @default(0)
-  lowStockAlert Int     @default(5)
+  stockQty      Int      @default(0)
+  lowStockAlert Int      @default(5)
   barcode       String?
-  isActive      Boolean @default(true)
+  isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  store         Store    @relation(fields: [storeId], references: [id])
-  orderItems    OrderItem[]
-  stockLogs     StockMovement[]
+  store      Store           @relation(fields: [storeId], references: [id])
+  orderItems OrderItem[]
+  stockLogs  StockMovement[]
   @@index([storeId])
   @@map("accessories")
 }
@@ -253,13 +200,13 @@ model Order {
   paymentMethod  PaymentMethod @default(CASH)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  store          Store         @relation(fields: [storeId], references: [id])
-  customer       Customer      @relation(fields: [customerId], references: [id])
-  prescription   Prescription? @relation(fields: [prescriptionId], references: [id])
-  staff          User          @relation(fields: [staffId], references: [id])
-  items          OrderItem[]
-  payments       Payment[]
-  statusLogs     OrderStatusLog[]
+  store        Store            @relation(fields: [storeId], references: [id])
+  customer     Customer         @relation(fields: [customerId], references: [id])
+  prescription Prescription?    @relation(fields: [prescriptionId], references: [id])
+  staff        User             @relation(fields: [staffId], references: [id])
+  items        OrderItem[]
+  payments     Payment[]
+  statusLogs   OrderStatusLog[]
   @@index([storeId])
   @@index([customerId])
   @@index([orderNumber])
@@ -277,10 +224,10 @@ model OrderItem {
   quantity    Int     @default(1)
   unitPrice   Float
   totalPrice  Float
-  order       Order      @relation(fields: [orderId], references: [id])
-  frame       Frame?     @relation(fields: [frameId], references: [id])
-  lens        Lens?      @relation(fields: [lensId], references: [id])
-  accessory   Accessory? @relation(fields: [accessoryId], references: [id])
+  order     Order      @relation(fields: [orderId], references: [id])
+  frame     Frame?     @relation(fields: [frameId], references: [id])
+  lens      Lens?      @relation(fields: [lensId], references: [id])
+  accessory Accessory? @relation(fields: [accessoryId], references: [id])
   @@index([orderId])
   @@map("order_items")
 }
@@ -293,7 +240,7 @@ model Payment {
   reference String?
   note      String?
   paidAt    DateTime      @default(now())
-  order     Order         @relation(fields: [orderId], references: [id])
+  order Order @relation(fields: [orderId], references: [id])
   @@index([orderId])
   @@map("payments")
 }
@@ -304,7 +251,7 @@ model OrderStatusLog {
   status    OrderStatus
   note      String?
   changedAt DateTime    @default(now())
-  order     Order       @relation(fields: [orderId], references: [id])
+  order Order @relation(fields: [orderId], references: [id])
   @@index([orderId])
   @@map("order_status_logs")
 }
@@ -321,9 +268,9 @@ model StockMovement {
   afterQty    Int
   reason      String?
   createdAt   DateTime          @default(now())
-  frame       Frame?     @relation(fields: [frameId], references: [id])
-  lens        Lens?      @relation(fields: [lensId], references: [id])
-  accessory   Accessory? @relation(fields: [accessoryId], references: [id])
+  frame     Frame?     @relation(fields: [frameId], references: [id])
+  lens      Lens?      @relation(fields: [lensId], references: [id])
+  accessory Accessory? @relation(fields: [accessoryId], references: [id])
   @@index([storeId])
   @@map("stock_movements")
 }
@@ -339,6 +286,7 @@ model Supplier {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  store     Store    @relation(fields: [storeId], references: [id])
   frames    Frame[]
   lenses    Lens[]
   purchases Purchase[]
@@ -355,9 +303,9 @@ model Purchase {
   notes         String?
   purchasedAt   DateTime @default(now())
   createdAt     DateTime @default(now())
-  store         Store    @relation(fields: [storeId], references: [id])
-  supplier      Supplier @relation(fields: [supplierId], references: [id])
-  items         PurchaseItem[]
+  store    Store          @relation(fields: [storeId], references: [id])
+  supplier Supplier       @relation(fields: [supplierId], references: [id])
+  items    PurchaseItem[]
   @@index([storeId])
   @@map("purchases")
 }
@@ -371,7 +319,7 @@ model PurchaseItem {
   quantity   Int
   unitCost   Float
   totalCost  Float
-  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  purchase Purchase @relation(fields: [purchaseId], references: [id])
   @@index([purchaseId])
   @@map("purchase_items")
 }
