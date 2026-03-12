@@ -4,16 +4,15 @@ RUN apk add --no-cache openssl
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY . .
+
 RUN npm install
 
-COPY prisma ./prisma
-COPY src ./src
-
-RUN mkdir -p uploads
+RUN npx prisma generate
 
 EXPOSE 5000
 
-CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && node prisma/seed.js && node src/index.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node prisma/seed.js && node src/index.js"]
+
 
 
